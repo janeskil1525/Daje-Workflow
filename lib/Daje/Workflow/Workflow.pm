@@ -34,65 +34,27 @@ use Daje::Workflow::Database;
 
 our $VERSION = "0.01";
 
-has 'config';
-has 'workflow';
-has 'workflow_pkey';
-has 'context';
-has 'loader';
-has 'database';
-has 'db';
-has 'pg';
+has 'workflow';         #
+has 'workflow_pkey';    #
+has 'context';          #
+has 'loader';           #
+has 'pg';               #
 
 sub process($self) {
 
-    $self->_db_connection();
-    unless ($self->error()->exists()){
-        $self->db($self->pg->db);
-        my $tx = $self->db->begin();
-        if ($self->_init()) {
+    my $db = $self->pg;
+    my $tx = $db->begin;
+    if ($self->_init()) {
 
 
-        }
     }
 
 }
 
-sub _db_connection($self) {
-    eval {
-        my $pg = Mojo::Pg->new()->dsn(
-            "dbi:Pg:dbname=Workflowtest;host=database;port=54321;user=test;password=test"
-        );
-        $self-pg($pg);
-    };
-    if (defined $@) {
-        $self->error()->add($@);
-    }
-}
+
 
 sub _init($self) {
 
-    eval {
-        my $loader = Daje::Workflow::Loader->new(
-            path => $self->context->{config_path}
-        )->load();
-        $self->loader($loader);
-
-
-
-        my $db = $pg->db;
-        my $tx = $db->begin();
-        my $database = Daje::Workflow::Database->new(
-            pg            => $pg,
-            db            => $db,
-            workflow      => $self->worlflow,
-            workflow_pkey => $self->worlflow_pkey,
-            context       => $self->context,
-        );
-        $self->database($database);
-        $self->database->start();
-
-    };
-    $self->error()->add($@) if defined $@;
 }
 
 1;
