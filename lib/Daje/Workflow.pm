@@ -1,8 +1,9 @@
-package Daje::Workflow::Workflow;
+package Daje::Workflow;
 use Mojo::Base -base, -signatures;
 
 use Daje::Workflow::Loader;
 use Daje::Workflow::Database;
+use Daje::Workflow::Database::Model;
 
 # NAME
 # ====
@@ -34,7 +35,7 @@ use Daje::Workflow::Database;
 
 our $VERSION = "0.01";
 
-has 'workflow';         #
+has 'workflow_name';    #
 has 'workflow_pkey';    #
 has 'context';          #
 has 'loader';           #
@@ -42,18 +43,25 @@ has 'pg';               #
 
 sub process($self) {
 
-    my $db = $self->pg;
+    my $db = $self->pg->db;
     my $tx = $db->begin;
-    if ($self->_init()) {
+    if ($self->_init($db)) {
 
 
     }
 
 }
 
+sub _init($self, $db) {
 
+    my $data = Daje::Workflow::Database::Model->new(
+        db            => $db,
+        workflow_pkey => $self->workflow_pkey,
+        workflow_name => $self->workflow_name,
+        context       => $self->context,
+    )->load();
 
-sub _init($self) {
+    my $test = 1;
 
 }
 

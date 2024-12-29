@@ -1,4 +1,4 @@
-package Daje::Workflow::PreChecks::Base::Common;
+package Daje::Workflow::Checks::Base::Common;
 use Mojo::Base -base, -signatures;
 
 has 'conditions';

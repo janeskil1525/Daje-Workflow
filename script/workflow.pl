@@ -11,6 +11,7 @@ use feature 'say';
 use feature 'signatures';
 use Daje::Workflow::Database;
 use Daje::Workflow::Loader;
+use Daje::Workflow;
 use Mojo::Pg;
 
 use namespace::clean -except => [qw/_options_data _options_config/];
@@ -29,13 +30,15 @@ sub run_workflow() {
     my $context->{sql_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_sql.ini';
     $context->{perl_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_perl.ini';
 
-    my $workflow = Daje::Workflow::Workflow->new(
+    my $workflow = Daje::Workflow->new(
         pg            => $pg,
         loader        => $loader,
-        workflow      => 'generate',
+        workflow_name => 'generate',
         workflow_pkey => '0',
         context       => $context,
     )->process();
 }
 
-main->new_with_options->run_workflow();
+run_workflow();
+
+1;

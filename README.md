@@ -1,4 +1,4 @@
-
+[![Actions Status](https://github.com/janeskil1525/Daje-Workflow/actions/workflows/test.yml/badge.svg)](https://github.com/janeskil1525/Daje-Workflow/actions)
 # NAME
 
 Daje::Workflow - It's new $module
@@ -11,13 +11,23 @@ Daje::Workflow - It's new $module
 
 Daje::Workflow is ...
 
+# REQUIRES
+
+[Mojo::Base](https://metacpan.org/pod/Mojo%3A%3ABase) 
+
+# METHODS
+
+## process($self,
+
+    process($self,();
+
+# AUTHOR
+
+janeskil1525 <janeskil1525@gmail.com>
+
 # LICENSE
 
 Copyright (C) janeskil1525.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
-
-# AUTHOR
-
-janeskil1525 <janeskil1525@gmail.com>
