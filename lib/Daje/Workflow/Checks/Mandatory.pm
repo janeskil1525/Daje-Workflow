@@ -1,5 +1,8 @@
-package Daje::Workflow::PreChecks::Mandatory;
-use Mojo::Base 'Daje::Workflow::PreChecks::Base::Common', -base, -signatures;
+package Daje::Workflow::Checks::Mandatory;
+use Mojo::Base 'Daje::Workflow::Checks::Base::Common', -base, -signatures;
+
+has 'context';
+has 'checks';
 
 
 sub check($self) {

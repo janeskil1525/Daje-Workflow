@@ -4,6 +4,7 @@ use Mojo::Base -base, -signatures;
 use Daje::Workflow::Loader;
 use Daje::Workflow::Database;
 use Daje::Workflow::Database::Model;
+use Daje::Workflow::Checks::Mandatory;
 
 # NAME
 # ====
@@ -41,14 +42,21 @@ has 'context';          #
 has 'loader';           #
 has 'pg';               #
 
-sub process($self) {
+has 'workflow_data';
+
+
+sub process($self, $action) {
 
     my $db = $self->pg->db;
     my $tx = $db->begin;
     if ($self->_init($db)) {
-
+        $self->_state_pre_checks($action)
 
     }
+
+}
+
+sub _state_pre_checks($self) {
 
 }
 
@@ -59,10 +67,13 @@ sub _init($self, $db) {
         workflow_pkey => $self->workflow_pkey,
         workflow_name => $self->workflow_name,
         context       => $self->context,
-    )->load();
+    );
+    $data->load();
+    $self->workflow_data($data->workflow_data());
+    $self->context($data->context());
+    $self->workflow_pkey($self->workflow->{workflow_pkey});
 
-    my $test = 1;
-
+    return 1;
 }
 
 1;

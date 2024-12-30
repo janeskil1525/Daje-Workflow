@@ -25,10 +25,11 @@ sub run_workflow() {
     )->migrate();
 
     my $loader = Daje::Workflow::Loader->new(
-        path =>  path => '/home/jan/Project/Daje-Workflow-Loader/conf'
-    )->load();
-    my $context->{sql_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_sql.ini';
-    $context->{perl_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_perl.ini';
+        path => '/home/jan/Project/Daje-Workflow-Loader/conf/'
+    );
+    $loader->load();
+    my $context->{context}->{sql_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_sql.ini';
+    $context->{context}->{perl_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_perl.ini';
 
     my $workflow = Daje::Workflow->new(
         pg            => $pg,
@@ -36,7 +37,7 @@ sub run_workflow() {
         workflow_name => 'generate',
         workflow_pkey => '0',
         context       => $context,
-    )->process();
+    )->process("sql");
 }
 
 run_workflow();
