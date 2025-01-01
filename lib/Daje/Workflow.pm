@@ -4,7 +4,7 @@ use Mojo::Base -base, -signatures;
 use Daje::Workflow::Loader;
 use Daje::Workflow::Database;
 use Daje::Workflow::Database::Model;
-use Daje::Workflow::Checks::Mandatory;
+use Daje::Workflow::Checks;
 
 # NAME
 # ====
@@ -45,19 +45,65 @@ has 'pg';               #
 has 'workflow_data';
 
 
-sub process($self, $action) {
+sub process($self, $activity_name) {
 
+    my $result = 0;
     my $db = $self->pg->db;
     my $tx = $db->begin;
     if ($self->_init($db)) {
-        $self->_state_pre_checks($action)
+        if ($self->_state_pre_checks()) {
+            if($self->_activity($db, $activity_name)) {
+
+            }
+        }
 
     }
+    return $result;
+}
 
+sub _activity($self, $db, $activity_name) {
+    my $result = 1;
+    my $activity = $self->loader->get_activity(
+        $self->workflow_name, $self->workflow_data->{state}, $activity_name
+    );
+
+    if(defined $activity) {
+        $result = Daje::Workflow::Activities->new(
+            db => $db
+        )->activity(
+            $self->context, $activity
+        );
+    }
+
+    return $result;
+}
+
+sub _state_post_checks($self) {
+    my $result = 1;
+    my $checks = $self->loader->get_post_checks(
+        $self->workflow_name, $self->workflow_data->{state}
+    );
+    if(defined $checks) {
+        $result = Daje::Workflow::Checks->new()->check(
+            $self->context, $checks
+        );
+    }
+
+    return $result;
 }
 
 sub _state_pre_checks($self) {
+    my $result = 1;
+    my $checks = $self->loader->get_pre_checks(
+        $self->workflow_name, $self->workflow_data->{state}
+    );
+    if(defined $checks) {
+        $result = Daje::Workflow::Checks->new()->check(
+            $self->context, $checks
+        );
+    }
 
+    return $result;
 }
 
 sub _init($self, $db) {
@@ -71,13 +117,14 @@ sub _init($self, $db) {
     $data->load();
     $self->workflow_data($data->workflow_data());
     $self->context($data->context());
-    $self->workflow_pkey($self->workflow->{workflow_pkey});
+    $self->workflow_pkey($self->workflow_data->{workflow_pkey});
 
     return 1;
 }
 
 1;
 __END__
+
 
 
 
@@ -106,6 +153,14 @@ Daje::Workflow is ...
 
 
 =head1 REQUIRES
+
+L<Daje::Workflow::Checks> 
+
+L<Daje::Workflow::Database::Model> 
+
+L<Daje::Workflow::Database> 
+
+L<Daje::Workflow::Loader> 
 
 L<Mojo::Base> 
 
