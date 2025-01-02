@@ -30,14 +30,16 @@ sub run_workflow() {
     $loader->load();
     my $context->{context}->{sql_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_sql.ini';
     $context->{context}->{perl_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_perl.ini';
-
     my $workflow = Daje::Workflow->new(
         pg            => $pg,
         loader        => $loader,
         workflow_name => 'generate',
         workflow_pkey => '0',
         context       => $context,
-    )->process("sql");
+    );
+    $workflow->process("sql");
+    say $workflow->error->error if $workflow->error->has_error() ;
+
 }
 
 run_workflow();

@@ -5,6 +5,8 @@ use Daje::Workflow::Loader;
 use Daje::Workflow::Database;
 use Daje::Workflow::Database::Model;
 use Daje::Workflow::Checks;
+use Daje::Workflow::Activities;
+use Daje::Workflow::Errors::Error;
 
 # NAME
 # ====
@@ -42,17 +44,21 @@ has 'context';          #
 has 'loader';           #
 has 'pg';               #
 
+has 'error';
 has 'workflow_data';
 
 
 sub process($self, $activity_name) {
 
+
     my $result = 0;
     my $db = $self->pg->db;
     my $tx = $db->begin;
     if ($self->_init($db)) {
-        if ($self->_state_pre_checks()) {
-            if($self->_activity($db, $activity_name)) {
+        if ($self->_state_pre_checks()
+            and $self->error->has_error() == 0) {
+            if($self->_activity($db, $activity_name)
+                and $self->error->has_error() == 0) {
 
             }
         }
@@ -69,7 +75,8 @@ sub _activity($self, $db, $activity_name) {
 
     if(defined $activity) {
         $result = Daje::Workflow::Activities->new(
-            db => $db
+            db    => $db,
+            error => $self->error,
         )->activity(
             $self->context, $activity
         );
@@ -84,10 +91,13 @@ sub _state_post_checks($self) {
         $self->workflow_name, $self->workflow_data->{state}
     );
     if(defined $checks) {
-        $result = Daje::Workflow::Checks->new()->check(
+        $result = Daje::Workflow::Checks->new(
+            error => $self->error
+        )->check(
             $self->context, $checks
         );
     }
+
 
     return $result;
 }
@@ -98,7 +108,9 @@ sub _state_pre_checks($self) {
         $self->workflow_name, $self->workflow_data->{state}
     );
     if(defined $checks) {
-        $result = Daje::Workflow::Checks->new()->check(
+        $result = Daje::Workflow::Checks->new(
+            error => $self->error
+        )->check(
             $self->context, $checks
         );
     }
@@ -118,12 +130,14 @@ sub _init($self, $db) {
     $self->workflow_data($data->workflow_data());
     $self->context($data->context());
     $self->workflow_pkey($self->workflow_data->{workflow_pkey});
-
+    my $error = Daje::Workflow::Errors::Error->new();
+    $self->error($error);
     return 1;
 }
 
 1;
 __END__
+
 
 
 
@@ -153,6 +167,10 @@ Daje::Workflow is ...
 
 
 =head1 REQUIRES
+
+L<Daje::Workflow::Errors::Error> 
+
+L<Daje::Workflow::Activities> 
 
 L<Daje::Workflow::Checks> 
 
