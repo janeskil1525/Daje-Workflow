@@ -32,14 +32,11 @@ sub activity($self, $context, $activity) {
     # $class->import();
     my $object = $$activity->{activity}->new(
         context => $context,
-        checks  => @{$checks}[$i]->{checks},
-        error   => $self->error,
         db      => $self->db,
+        error   => $self->error,
     );
 
     $object->$activity->{method}();
-
-
 }
 
 1;
