@@ -29,7 +29,7 @@ sub activity($self, $context, $activity) {
 
     my $class = load_class $activity->{activity};
     # $class->import();
-    my $object = $$activity->{activity}->new(
+    my $object = $activity->{activity}->new(
         context => $context,
         db      => $self->db,
         error   => $self->error,

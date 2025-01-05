@@ -20,16 +20,28 @@ sub run_workflow() {
     my $pg = Mojo::Pg->new()->dsn(
         "dbi:Pg:dbname=Workflowtest;host=database;port=54321;user=test;password=test"
     );
+
+    my $migrations;
+    push @{$migrations}, {class => 'Daje::Workflow::Database', name => 'workflow', migration => 2};
+    push @{$migrations}, {class => 'Daje::Workflow::FileChanged::Database::DB', name => 'file_changed', migration => 1};
+
     Daje::Workflow::Database->new(
-        pg => $pg
+        pg          => $pg,
+        migrations  => $migrations,
     )->migrate();
 
     my $loader = Daje::Workflow::Loader->new(
-        path => '/home/jan/Project/Daje-Workflow-Loader/conf/'
+        path => '/home/jan/Project/Daje-Workflow-Loader/conf/',
+        type => 'workflow',
     );
     $loader->load();
     my $context->{context}->{sql_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_sql.ini';
     $context->{context}->{perl_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_perl.ini';
+    $context->{context}->{source_dir}='/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
+    $context->{context}->{sql_target_dir}='/home/jan/Project/SyntaxSorcery/Tools/Generate/Sql/';
+    $context->{context}->{data_dir}='/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
+    $context->{context}->{target_dir}='/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
+
     my $workflow = Daje::Workflow->new(
         pg            => $pg,
         loader        => $loader,
