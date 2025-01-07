@@ -13,10 +13,12 @@ use Daje::Workflow::Database;
 use Daje::Workflow::Loader;
 use Daje::Workflow;
 use Mojo::Pg;
+use Daje::Workflow::Errors::Error;
 
 use namespace::clean -except => [qw/_options_data _options_config/];
 
 sub run_workflow() {
+
     my $pg = Mojo::Pg->new()->dsn(
         "dbi:Pg:dbname=Workflowtest;host=database;port=54321;user=test;password=test"
     );
@@ -49,7 +51,7 @@ sub run_workflow() {
         workflow_pkey => '0',
         context       => $context,
     );
-    $workflow->process("sql");
+    $workflow->process("changed_files");
     say $workflow->error->error if $workflow->error->has_error() ;
 
 }
