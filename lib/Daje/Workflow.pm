@@ -80,6 +80,7 @@ sub _activity($self, $db, $activity_name) {
         )->activity(
             $self->context, $activity
         );
+
     }
 
     return $result;

@@ -34,8 +34,12 @@ sub activity($self, $context, $activity) {
         db      => $self->db,
         error   => $self->error,
     );
+    my $method = $activity->{method};
+    $object->$method if $object->can($method);
 
-    $object->$activity->{method}();
+    my $test = 1;
+
+    return 1;
 }
 
 1;
