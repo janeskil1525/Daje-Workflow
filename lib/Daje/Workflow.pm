@@ -46,6 +46,7 @@ has 'pg';               #
 
 has 'error';
 has 'workflow_data';
+has 'model';
 
 
 sub process($self, $activity_name) {
@@ -56,13 +57,14 @@ sub process($self, $activity_name) {
     if ($self->_init($db)) {
         if ($self->_state_pre_checks()
             and $self->error->has_error() == 0) {
-            if($self->_activity($db, $activity_name, $self->workflow_data())
+            if($self->_activity($db, $activity_name)
                 and $self->error->has_error() == 0) {
                 if($self->_state_post_checks()
                     and $self->error->has_error() == 0) {
                     if($self->_state_observers()
                         and $self->error->has_error() == 0) {
-                        if($self->save_workflow($db)) {
+                        if($self->save_workflow($db)
+                            and $self->error->has_error() == 0) {
                             $tx->commit();
                         }
                     }
@@ -77,19 +79,12 @@ sub process($self, $activity_name) {
 sub save_workflow($self, $db) {
 
     eval {
-        my $data = Daje::Workflow::Database::Model->new(
-            db            => $db,
-            workflow_pkey => $self->workflow_pkey,
-            workflow_name => $self->workflow_name,
-            context       => $self->context,
-        );
-
-        $data->save_workflow($self - workflow_data());
-        $data->save_context();
+        $self->model->save_workflow($self->workflow_data());
+        $self->model->save_context($self->context());
     };
     $self->error->add_error($@) if defined $@;
 
-    return 0 if defined $@;
+    return 0 if defined $@ and length $@;
     return 1;
 }
 
@@ -104,7 +99,7 @@ sub _activity($self, $db, $activity_name) {
             db    => $db,
             error => $self->error,
         )->activity(
-            $self->context, $activity
+            $self->context, $activity, $self->workflow_data()
         );
     }
 
@@ -159,18 +154,23 @@ sub _state_pre_checks($self) {
 
 sub _init($self, $db) {
 
+    my $error = Daje::Workflow::Errors::Error->new();
+    $self->error($error);
+
     my $data = Daje::Workflow::Database::Model->new(
         db            => $db,
         workflow_pkey => $self->workflow_pkey,
         workflow_name => $self->workflow_name,
         context       => $self->context,
     );
-    $data->load();
+    my $err = $data->load();
+    if(length($err) > 0) {
+        $self->error->add_error($err);
+    }
     $self->workflow_data($data->workflow_data());
     $self->context($data->context());
     $self->workflow_pkey($self->workflow_data->{workflow_pkey});
-    my $error = Daje::Workflow::Errors::Error->new();
-    $self->error($error);
+    $self->model($data);
     return 1;
 }
 

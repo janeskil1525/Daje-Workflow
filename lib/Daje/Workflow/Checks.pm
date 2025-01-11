@@ -28,14 +28,15 @@ sub check($self, $context, $checks) {
 
     my $length = scalar @{$checks};
     for (my $i = 0; $i < $length; $i++) {
-        my $cl = @{$checks}[$i]->{class};
-        my $class = load_class $cl;
-        # $class->import();
-        $result = $cl->new(
-            context => $context,
-            checks  => @{$checks}[$i]->{checks},
-            error   => $self->error,
-        )->check();
+        if (length(@{$checks}[$i]->{class})) {
+            my $class = load_class @{$checks}[$i]->{class};
+            # $class->import();
+            $result = @{$checks}[$i]->{class}->new(
+                context => $context,
+                checks  => @{$checks}[$i]->{checks},
+                error   => $self->error,
+            )->check();
+        }
     }
     return $result;
 }

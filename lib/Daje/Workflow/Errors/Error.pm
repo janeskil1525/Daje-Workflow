@@ -16,6 +16,8 @@ has 'error' => " ";
 has 'has_error' => 0;
 
 sub add_error($self, $error) {
+    return unless length($error);
+
     my $err = $self->error();
     $err = $error . '\n' . $err;
     $self->error($error);
