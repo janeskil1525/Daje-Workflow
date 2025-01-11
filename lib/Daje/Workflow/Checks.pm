@@ -20,7 +20,9 @@ use Mojo::Loader qw(load_class);
 #
 #
 
+has 'db';
 has 'error';
+has 'model';
 
 sub check($self, $context, $checks) {
     return 1 unless defined $checks;
@@ -29,12 +31,15 @@ sub check($self, $context, $checks) {
     my $length = scalar @{$checks};
     for (my $i = 0; $i < $length; $i++) {
         if (length(@{$checks}[$i]->{class})) {
+            $self->model->insert_history(@{$checks}[$i]->{class});
             my $class = load_class @{$checks}[$i]->{class};
             # $class->import();
             $result = @{$checks}[$i]->{class}->new(
                 context => $context,
                 checks  => @{$checks}[$i]->{checks},
                 error   => $self->error,
+                model => $self->model,
+                db      => $self->db,
             )->check();
         }
     }

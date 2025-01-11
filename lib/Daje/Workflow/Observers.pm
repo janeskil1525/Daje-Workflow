@@ -22,7 +22,7 @@ use Mojo::Loader qw(load_class);
 
 has 'db';
 has 'error';
-
+has 'model';
 
 sub observer($self, $context, $observers) {
     return 1 unless defined $observers;
@@ -30,12 +30,14 @@ sub observer($self, $context, $observers) {
 
     my $length = scalar @{$observers};
     for (my $i = 0; $i < $length; $i++) {
-        my $class = load_class $$observers->{observer};
+        $self->model->insert_history(@{$observers}[$i]->{observer});
+        my $class = load_class @{$observers}[$i]->{observer};
         # $class->import();
-        my $object = $$observers->{observer}->new(
+        my $object = @{$observers}[$i]->new(
             context => $context,
             db      => $self->db,
             error   => $self->error,
+            model => $self->model,
         )->observe();
     }
 

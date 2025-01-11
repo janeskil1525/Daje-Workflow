@@ -96,8 +96,9 @@ sub _activity($self, $db, $activity_name) {
 
     if(defined $activity) {
         $result = Daje::Workflow::Activities->new(
-            db    => $db,
-            error => $self->error,
+            db      => $db,
+            error   => $self->error,
+            model => $self->model,
         )->activity(
             $self->context, $activity, $self->workflow_data()
         );
@@ -126,7 +127,8 @@ sub _state_post_checks($self) {
     );
     if(defined $checks) {
         $result = Daje::Workflow::Checks->new(
-            error => $self->error
+            error => $self->error,
+            model => $self->model,
         )->check(
             $self->context, $checks
         );
@@ -143,7 +145,8 @@ sub _state_pre_checks($self) {
     );
     if(defined $checks) {
         $result = Daje::Workflow::Checks->new(
-            error => $self->error
+            error => $self->error,
+            model => $self->model,
         )->check(
             $self->context, $checks
         );

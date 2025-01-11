@@ -26,6 +26,8 @@ use Mojo::Loader qw(load_class);
 
 has 'db';
 has 'error';
+has 'history';
+has 'model';
 
 sub activity($self, $context, $activity, $workflow_data) {
     return 1 unless defined $activity;
@@ -35,10 +37,12 @@ sub activity($self, $context, $activity, $workflow_data) {
         and $self->error->has_error() == 0)) {
         my $class = load_class $activity->{activity};
         # $class->import();
+        $self->model->insert_history($activity->{activity} . ' '. $activity->{method});
         my $object = $activity->{activity}->new(
             context => $context,
             db      => $self->db,
             error   => $self->error,
+            model => $self->model,
         );
         my $method = $activity->{method};
         if ($object->can($method)) {
