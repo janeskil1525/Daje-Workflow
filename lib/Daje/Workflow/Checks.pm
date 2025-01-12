@@ -31,7 +31,7 @@ sub check($self, $context, $checks) {
     my $length = scalar @{$checks};
     for (my $i = 0; $i < $length; $i++) {
         if (length(@{$checks}[$i]->{class})) {
-            $self->model->insert_history(@{$checks}[$i]->{class});
+            $self->model->insert_history(@{$checks}[$i]->{checks}, @{$checks}[$i]->{class}, 1);
             my $class = load_class @{$checks}[$i]->{class};
             # $class->import();
             $result = @{$checks}[$i]->{class}->new(
@@ -46,6 +46,7 @@ sub check($self, $context, $checks) {
     return $result;
 }
 1;
+
 
 
 

@@ -36,7 +36,7 @@ use Daje::Workflow::Errors::Error;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-our $VERSION = "0.03";
+our $VERSION = "0.04";
 
 has 'workflow_name';    #
 has 'workflow_pkey';    #
@@ -179,6 +179,7 @@ sub _init($self, $db) {
 
 1;
 __END__
+
 
 
 

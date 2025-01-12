@@ -24,7 +24,7 @@ sub run_workflow() {
     );
 
     my $migrations;
-    push @{$migrations}, {class => 'Daje::Workflow::Database', name => 'workflow', migration => 2};
+    push @{$migrations}, {class => 'Daje::Workflow::Database', name => 'workflow', migration => 3};
     push @{$migrations}, {class => 'Daje::Workflow::FileChanged::Database::DB', name => 'file_changed', migration => 1};
 
     Daje::Workflow::Database->new(
@@ -33,7 +33,7 @@ sub run_workflow() {
     )->migrate();
 
     my $loader = Daje::Workflow::Loader->new(
-        path => '/home/jan/Project/Daje-Workflow-Loader/conf/',
+        path => '/home/jan/Project/Daje-Workflow-Workflows/Generate',
         type => 'workflow',
     );
     $loader->load();
