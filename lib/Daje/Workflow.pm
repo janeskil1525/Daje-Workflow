@@ -102,6 +102,12 @@ sub _activity($self, $db, $activity_name) {
         )->activity(
             $self->context, $activity, $self->workflow_data()
         );
+    } else {
+        $self->error->add_error("The workflow '" .
+            $self->workflow_name . "' in state '" .
+            $self->workflow_data->{state} . "' don't have an activity called '" .
+            $activity_name . "'"
+        );
     }
 
     return $result;

@@ -57,11 +57,13 @@ sub activity($self, $context, $activity, $workflow_data) {
             eval {
                 $object->$method
             };
-            $self->error->error($@) if defined $@;
+            $self->error->add_error($@) if defined $@;
         }
         else {
-            $self->error->error(
-                $activity->{activity} . " does not have a method called " . $activity->{method}
+            $self->error->add_error(
+                $activity->{activity} .
+                    " does not have a method called '" .
+                    $activity->{method} . "'"
             );
         }
         if ($self->error->has_error() == 0) {
