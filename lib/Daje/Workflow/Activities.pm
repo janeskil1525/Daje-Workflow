@@ -38,7 +38,10 @@ sub activity($self, $context, $activity, $workflow_data) {
     my $result = 1;
     if ($self->_pre_checks($activity->{pre_checks}
         and $self->error->has_error() == 0)) {
-        my $class = load_class $activity->{activity};
+        if (my $e = load_class $activity->{activity}) {
+            $self->error->add_error($e)
+        }
+        return 0 if $self->error->has_error();
 
         my $activity_data;
         $activity_data = $activity->{activity_data}
