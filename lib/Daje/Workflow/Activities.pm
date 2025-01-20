@@ -79,7 +79,6 @@ sub activity($self, $context, $activity, $workflow_data) {
             $workflow_data->{state} = $activity->{resulting_state};
         }
     }
-    my $test = 1;
 
     return 1;
 }

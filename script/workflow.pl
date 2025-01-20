@@ -51,7 +51,7 @@ sub run_workflow() {
         workflow_pkey => '1',
         context       => $context,
     );
-    $workflow->process("generate_sql");
+    $workflow->process("save_sql_file");
     say $workflow->error->error if $workflow->error->has_error() ;
 
 }
