@@ -37,13 +37,15 @@ sub run_workflow() {
         type => 'workflow',
     );
     $loader->load();
-    # my $context->{context}->{sql_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_sql.ini';
-    # $context->{context}->{perl_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_perl.ini';
-    # $context->{context}->{source_dir}='/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
-    # $context->{context}->{sql_target_dir}='/home/jan/Project/SyntaxSorcery/Tools/Generate/Sql/';
-    # $context->{context}->{data_dir}='/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
-    # $context->{context}->{target_dir}='/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
-    my $context;
+    my $context->{context}->{sql_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_sql.ini';
+    $context->{context}->{perl_path} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_perl.ini';
+    $context->{context}->{source_dir} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
+    $context->{context}->{sql_target_dir} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/Sql/';
+    $context->{context}->{data_dir} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
+    $context->{context}->{target_dir} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
+    $context->{context}->{dbconn} = "dbi:Pg:dbname=DB;host=database;port=54321;user=test;password=test";
+
+    # my $context;
     my $workflow = Daje::Workflow->new(
         pg            => $pg,
         loader        => $loader,
@@ -51,7 +53,7 @@ sub run_workflow() {
         workflow_pkey => '1',
         context       => $context,
     );
-    $workflow->process("save_sql_file");
+    $workflow->process("generate_schema");
     say $workflow->error->error if $workflow->error->has_error() ;
 
 }
