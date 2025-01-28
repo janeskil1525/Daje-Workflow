@@ -45,6 +45,15 @@ sub run_workflow() {
     $context->{context}->{target_dir} = '/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/';
     $context->{context}->{dbconn} = "dbi:Pg:dbname=DB;host=database;port=54321;user=test;password=test";
 
+
+    $context->{context}->{schema_dir}="/home/jan/Project/SyntaxSorcery/Target/Data/";
+    $context->{context}->{perl}->{name_space_dir}="/home/jan/Project/SyntaxSorcery/Database/lib/Database/Model/Super/";
+    $context->{context}->{perl}->{base_space_dir}="/home/jan/Project/SyntaxSorcery/Database/lib/Database/Model/Super/Common/";
+    $context->{context}->{perl}->{interface_space_dir}="/home/jan/Project/SyntaxSorcery/Database/lib/Database/Model/";
+    $context->{context}->{perl}->{name_space}="Database::Model::Super::";
+    $context->{context}->{perl}->{base_name_space}="Database::Model::Super::Common::";
+    $context->{context}->{perl}->{name_interface}="Database::Model::";
+
     # my $context;
     my $workflow = Daje::Workflow->new(
         pg            => $pg,
@@ -53,7 +62,7 @@ sub run_workflow() {
         workflow_pkey => '1',
         context       => $context,
     );
-    $workflow->process("generate_schema");
+    $workflow->process("generate_perl");
     say $workflow->error->error if $workflow->error->has_error() ;
 
 }
