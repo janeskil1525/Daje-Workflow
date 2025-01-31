@@ -39,7 +39,8 @@ sub activity($self, $context, $activity, $workflow_data) {
     if ($self->_pre_checks($activity->{pre_checks}
         and $self->error->has_error() == 0)) {
         if (my $e = load_class $activity->{activity}) {
-            $self->error->add_error($e)
+            $self->error->add_error($e);
+            $self->error->add_error($activity->{activity} . " Not found ");
         }
         return 0 if $self->error->has_error();
 
