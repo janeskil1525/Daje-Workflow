@@ -33,7 +33,7 @@ sub run_workflow() {
     )->migrate();
 
     my $loader = Daje::Workflow::Loader->new(
-        path => '/home/jan/Project/Daje-Workflow-Workflows/Generate',
+        path => '/home/jan/Project/Daje-Workflow-Workflows/Workflows',
         type => 'workflow',
     );
     $loader->load();
@@ -47,11 +47,11 @@ sub run_workflow() {
 
 
     $context->{context}->{schema_dir}="/home/jan/Project/Daje-Database/schema/";
-    $context->{context}->{perl}->{name_space_dir}="/home/jan/Project/Daje-Database/lib/Daje/Database/Model/Super/";
-    $context->{context}->{perl}->{view_name_space_dir}="/home/jan/Project/Daje-Database/lib/Daje/Database/View/Super/";
-    $context->{context}->{perl}->{base_space_dir}="/home/jan/Project/Daje-Database/lib/Daje/Database/Model/Super/Common/";
+    $context->{context}->{perl}->{name_space_dir}="/home/jan/Project/Daje-Database-Model/lib/Daje/Database/Model/Super/";
+    $context->{context}->{perl}->{view_name_space_dir}="/home/jan/Project/Daje-Database-Model/lib/Daje/Database/View/Super/";
+    $context->{context}->{perl}->{base_space_dir}="/home/jan/Project/Daje-Database-Model/lib/Daje/Database/Model/Super/Common/";
     $context->{context}->{perl}->{interface_space_dir}="/home/jan/Project/Daje-Database/lib/Daje/Database/Model/";
-    $context->{context}->{perl}->{view_interface_space_dir}="/home/jan/Project/Daje-Database/lib/Daje/Database/View/";
+    $context->{context}->{perl}->{view_interface_space_dir}="/home/jan/Project/Daje-Database-Model/lib/Daje/Database/View/";
 
     $context->{context}->{perl}->{name_space}="Daje::Database::Model::Super::";
     $context->{context}->{perl}->{view_name_space}="Daje::Database::View::Super::";
@@ -62,9 +62,9 @@ sub run_workflow() {
     # my $context;
     my $workflow = Daje::Workflow->new(
         pg            => $pg,
-        loader        => $loader,
+        loader        => $loader->loader,
         workflow_name => 'generate',
-        workflow_pkey => '4',
+        workflow_pkey => '12',
         context       => $context,
     );
     # changed_files
@@ -74,7 +74,7 @@ sub run_workflow() {
     # save_schema_file
     # generate_perl generatePerl
     # save_perl_file
-    $workflow->process("save_perl_file");
+    $workflow->process("generate_sql");
     say $workflow->error->error if $workflow->error->has_error() ;
 
 }
