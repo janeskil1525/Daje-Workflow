@@ -32,7 +32,7 @@ has 'error';
 has 'history';
 has 'model';
 
-sub activity($self, $context, $activity, $workflow_data) {
+sub activity($self, $context, $activity,                     ) {
     return 1 unless defined $activity;
 
     my $result = 1;

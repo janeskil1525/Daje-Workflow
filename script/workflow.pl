@@ -74,7 +74,7 @@ sub run_workflow() {
     # save_schema_file
     # generate_perl generatePerl
     # save_perl_file
-    $workflow->process("generate_sql");
+    $workflow->process("save_perl_file");
     say $workflow->error->error if $workflow->error->has_error() ;
 
 }
