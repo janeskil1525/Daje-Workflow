@@ -64,7 +64,7 @@ sub run_workflow() {
         pg            => $pg,
         loader        => $loader->loader,
         workflow_name => 'generate',
-        workflow_pkey => '12',
+        workflow_pkey => '15',
         context       => $context,
     );
     # changed_files

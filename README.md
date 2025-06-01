@@ -1,15 +1,31 @@
 [![Actions Status](https://github.com/janeskil1525/Daje-Workflow/actions/workflows/test.yml/badge.svg)](https://github.com/janeskil1525/Daje-Workflow/actions)
 # NAME
 
-Daje::Workflow - It's new $module
+Daje::Workflow - It's a simple workflow engine
 
 # SYNOPSIS
 
     use Daje::Workflow;
+    use Daje::Workflow::Loader;
+    use Daje::Workflow::Database;
+    use Daje::Workflow::Database::Model;
+
+    my $context->{context}->{some_key_needed_by_some_activity}="";
+
+    my $workflow = Daje::Workflow->new(
+         pg            => $pg,
+         loader        => $loader->loader,
+         workflow_name => 'generate',
+         workflow_pkey => '12',
+         context       => $context,
+    );
+
+    $workflow->process("save_perl_file");
+    say $workflow->error->error if $workflow->error->has_error() ;
 
 # DESCRIPTION
 
-Daje::Workflow is ...
+Daje::Workflow is
 
 # REQUIRES
 
