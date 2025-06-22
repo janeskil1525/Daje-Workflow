@@ -1,6 +1,6 @@
 Revision history for Perl extension Daje-Workflow
 
 {{$NEXT}}
-
+    - Save workflow_pkey for next activity
     - original version
 

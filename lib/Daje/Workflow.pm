@@ -1,5 +1,6 @@
 package Daje::Workflow;
 use Mojo::Base -base, -signatures;
+use v5.40;
 
 use Daje::Workflow::Loader;
 use Daje::Workflow::Database;
@@ -52,7 +53,7 @@ use Daje::Workflow::Errors::Error;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-our $VERSION = "0.10";
+our $VERSION = "0.11";
 
 has 'workflow_name';    #
 has 'workflow_pkey';    #
@@ -94,14 +95,18 @@ sub process($self, $activity_name) {
 
 sub save_workflow($self, $db) {
 
-    eval {
-        $self->model->save_workflow($self->workflow_data());
+    try {
+        $self->workflow_pkey(
+            $self->model->save_workflow(
+                $self->workflow_data()
+            )
+        );
         $self->model->save_context($self->context());
+    } catch($e) {
+        $self->error->add_error($e);
     };
-    $self->error->add_error($@) if defined $@;
 
-    return 0 if defined $@ and length $@;
-    return 1;
+    return !$self->error->has_error();
 }
 
 sub _activity($self, $db, $activity_name) {
