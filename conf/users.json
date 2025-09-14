@@ -3,7 +3,7 @@
     "context": {
       "sql_path": "/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_sql.ini",
       "perl_path": "/home/jan/Project/SyntaxSorcery/Tools/Generate/conf/generate_perl.ini",
-      "source_dir": "/home/jan/Project/Daje-Schema/Users/",
+      "source_dir": "/home/jan/Project/Daje-Plugin-Users/schema/",
       "sql_target_dir": "/home/jan/Project/SyntaxSorcery/Tools/Generate/Sql/",
       "data_dir": "/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/",
       "target_dir": "/home/jan/Project/SyntaxSorcery/Tools/Generate/schema/",

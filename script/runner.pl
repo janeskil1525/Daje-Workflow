@@ -64,14 +64,14 @@ sub runner ($self) {
     );
     $loader->load();
 
-    # my $context;
-    my $workflow = Daje::Workflow->new(
-        pg            => $pg,
-        loader        => $loader->loader,
-        workflow_name => $config->param('workflow.name'),
-        workflow_pkey => '0',
-        context       => $config->param('context'),
-    );
+    my $context->{context} = $config->param('context');
+    # my $workflow = Daje::Workflow->new(
+    #     pg            => $pg,
+    #     loader        => $loader->loader,
+    #     workflow_name => $config->param('workflow.name'),
+    #     workflow_pkey => '0',
+    #     context       => $context,
+    # );
     #
     # generate_sql
     # save_sql_file
@@ -86,10 +86,19 @@ sub runner ($self) {
     my $length = scalar @{$activities};
     @$activities = sort {$a->{order} <=> $b->{order}} @$activities ;
 
+    my $err = 1;
+    my $workflow_pkey = 0;
     for(my $i = 0; $i < $length; $i++) {
-        my $err = 1;
+        my $workflow = Daje::Workflow->new(
+            pg            => $pg,
+            loader        => $loader->loader,
+            workflow_name => $config->param('workflow.name'),
+            workflow_pkey => $workflow_pkey,
+            context       => $context,
+        );
         if($err == 1) {
             $workflow->process(@{$activities}[$i]->{activity});
+            $workflow_pkey = $workflow->workflow_pkey();
             $err = !$workflow->error->has_error();
             say $workflow->error->error if $workflow->error->has_error();
         }
