@@ -1,0 +1,79 @@
+package Daje::Workflow::Database::Model::WorkflowConnection;
+use Mojo::Base -base, -signatures;
+use v5.40;
+
+# NAME
+# ====
+#
+# Daje::Workflow::Database::Model::WorkflowConnection
+#
+#
+# REQUIRES
+# ========
+#
+# Mojo::Base>
+#
+#
+# METHODS
+#
+#  load($self)
+#
+#  save();
+#
+#
+# LICENSE
+# =======
+#
+# Copyright (C) janeskil1525.
+#
+# This library is free software; you can redistribute it and/or modify
+# it under the same terms as Perl itself.
+#
+# AUTHOR
+# ======
+#
+# janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
+
+has 'db';
+
+sub load($self, $data) {
+
+    my $result = $self->db->select(
+        'workflow_connections', ['*'],
+        {
+            connector      => $data->connector,
+            connector_fkey => $data->{connector_fkey},
+        }
+    );
+
+    my $hash;
+    $hash = $data->hash if $result->rows > 0;
+
+    return $hash;
+}
+
+sub insert($self, $data) {
+
+    my $workflow_connections_pkey = 0;
+    try {
+            delete %$data{workflow_connections_pkey};
+            $workflow_connections_pkey= $self->db->insert(
+                "workflow_connections",
+                {
+                    workflow_fkey  => $data->{workflow_fkey},
+                    connector      => $data->{connector},
+                    connector_fkey => $data->{connector_fkey},
+                },
+                {
+                    returning => 'workflow_connections_pkey'
+                }
+            )->hash->{workflow_connections_pkey};
+        } catch ($e) {
+            my $test = $e;
+            say $e->to_string;
+            $e = $e;
+        };
+
+    return $workflow_connections_pkey;
+}
+1;
