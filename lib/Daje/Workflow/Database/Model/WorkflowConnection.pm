@@ -41,8 +41,8 @@ sub load($self, $data) {
     my $result = $self->db->select(
         'workflow_connections', ['*'],
         {
-            connector      => $data->connector,
-            connector_fkey => $data->{connector_fkey},
+            connector      => $data->{connector},
+            connector_fkey => $data->{connector_pkey},
         }
     );
 

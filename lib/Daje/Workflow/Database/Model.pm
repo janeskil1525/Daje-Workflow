@@ -153,11 +153,11 @@ sub insert_history($self, $history_text, $class = " ", $internal =  1) {
 sub load_workflow_from_connector_fkey($self, $data) {
     my $connector = Daje::Workflow::Database::Model::WorkflowConnection->new(db => $self->db);
 
-    $data->{connector_fkey} = 0 unless $data->{connector_fkey};
+    $data->{connector_data}->{connector_pkey} = 0 unless $data->{connector_data}->{connector_pkey};
     my $workflow_fkey = 0;
 
-    if ($data->{connector_fkey} > 0) {
-        $workflow_fkey = $connector->load($data)->{workflow_fkey};
+    if ($data->{connector_data}->{connector_pkey} > 0) {
+        $workflow_fkey = $connector->load($data->{connector_data})->{workflow_fkey};
     }
 
     return $workflow_fkey;
