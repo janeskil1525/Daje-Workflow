@@ -1,4 +1,4 @@
-[![Actions Status](https://github.com/janeskil1525/Daje-Workflow/actions/workflows/test.yml/badge.svg)](https://github.com/janeskil1525/Daje-Workflow/actions)
+[![Actions Status](https://github.com/janeskil1525/Daje-Workflow/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/janeskil1525/Daje-Workflow/actions?workflow=test)
 # NAME
 
 Daje::Workflow - It's a simple workflow engine
