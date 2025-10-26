@@ -17,9 +17,7 @@ use v5.42;
 #     Expected input from workflow
 #
 #     "activity_data": {
-#         "class": "Model to use",
-#         "update": "Method in model to use for update",
-#         "insert": "Method in model to use for insert"
+#         "class": "Model to use"
 #     }
 #
 # DESCRIPTION
@@ -48,25 +46,30 @@ sub save ($self) {
 
     my $data = $self->context->{context}->{payload};
     my $class = $self->activity_data->{class};
-    my $insert = $self->activity_data->{insert};
-    my $update = $self->activity_data->{update};
     if (my $e = load_class $class) {
         $self->error->add_error($e);
         $self->error->add_error($class . " Not found ");
     }
+    return 0 if $self->error->has_error();
+    say "Class = " . $class;
 
     try {
         my $dbclass = $class->new(db => $self->db);
-        if ($data->{$dbclass->primary_key_name} > 0) {
-            $self->model->insert_history("Update object " . Dumper($data), "$class::$update", 1);
+        say $dbclass->primary_key_name . " " . Dumper($data);
+        if (exists $data->{$dbclass->primary_key_name} and $data->{$dbclass->primary_key_name} > 0) {
+            $self->model->insert_history(
+                "Update object " . Dumper($data), " $class->update", 1
+            );
 
-            my $result = $dbclass->$update($data);
+            my $result = $dbclass->update($data);
             if($result->{result} == 0) {
                 $self->error->add_error($result->{error});
             }
         } else {
-            $self->model->insert_history("New object "  . Dumper($data), "$class::$insert", 1);
-            my $tools_object_index_pkey = $dbclass->$insert($data);
+            $self->model->insert_history(
+                "New object "  . Dumper($data), " $class->insert", 1
+            );
+            my $tools_object_index_pkey = $dbclass->insert($data);
         }
     } catch ($e) {
         $self->error->add_error($e);
