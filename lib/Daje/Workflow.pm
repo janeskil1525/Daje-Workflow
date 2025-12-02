@@ -102,39 +102,60 @@ has 'model';
 
 sub process($self, $activity_name) {
 
+    my $auto = 1;
     my $result = 0;
     my $db = $self->pg->db;
     my $tx = $db->begin;
     if ($self->_init($db)) {
-        if ($self->_state_pre_checks()
-            and $self->error->has_error() == 0) {
-            if ($self->_activity_pre_checks($activity_name)
+        while($auto == 1) {
+            $result = 0;
+            if ($self->_state_pre_checks()
                 and $self->error->has_error() == 0) {
-                if ($self->_activity($db, $activity_name)
+                if ($self->_activity_pre_checks($activity_name)
                     and $self->error->has_error() == 0) {
-                    if ($self->_activity_post_checks($activity_name)
+                    if ($self->_activity($db, $activity_name)
                         and $self->error->has_error() == 0) {
-                        if ($self->_state_post_checks()
+                        if ($self->_activity_post_checks($activity_name)
                             and $self->error->has_error() == 0) {
-                            if ($self->_state_observers()
+                            if ($self->_state_post_checks()
                                 and $self->error->has_error() == 0) {
-                                if ($self->save_workflow($db)
+                                if ($self->_state_observers()
                                     and $self->error->has_error() == 0) {
-                                    $tx->commit();
+                                    if ($self->save_workflow($db)
+                                        and $self->error->has_error() == 0) {
+                                        $tx->commit();
+                                        $result = 1;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
+            $auto = 0;
+            if($self->error->has_error() == 0) {
+                $activity_name = $self->_get_auto($activity_name);
+                $auto = length($activity_name > 0);
+            }
         }
-
     }
     return $result;
 }
 
-sub save_workflow($self, $db) {
+sub _get_auto($self, $activity_name) {
 
+    my $new_activity = "";
+    my $activity = $self->loader->get_activity(
+        $self->workflow_name, $self->workflow_data->{state}, $activity_name
+    );
+
+    if(exists $activity->{auto}) {
+        $new_activity = $activity->{auto}->{activity};
+    }
+    return $new_activity;
+}
+
+sub save_workflow($self, $db) {
     try {
         $self->workflow_pkey(
             $self->model->save_workflow(
@@ -189,6 +210,29 @@ sub _state_observers($self) {
 
 sub _activity_pre_checks($self, $activity_name) {
     my $result = 1;
+        if ($self->_state_pre_checks()
+            and $self->error->has_error() == 0) {
+            if ($self->_activity_pre_checks($activity_name)
+                and $self->error->has_error() == 0) {
+                if ($self->_activity($db, $activity_name)
+                    and $self->error->has_error() == 0) {
+                    if ($self->_activity_post_checks($activity_name)
+                        and $self->error->has_error() == 0) {
+                        if ($self->_state_post_checks()
+                            and $self->error->has_error() == 0) {
+                            if ($self->_state_observers()
+                                and $self->error->has_error() == 0) {
+                                if ($self->save_workflow($db)
+                                    and $self->error->has_error() == 0) {
+                                    $tx->commit();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     my $checks = $self->loader->get_activity_pre_checks(
         $self->workflow_name, $self->workflow_data->{state}, $activity_name
     );
