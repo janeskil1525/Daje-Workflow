@@ -72,7 +72,6 @@ our $VERSION = "1.10";
 sub save($self) {
 
     try {
-
         my $files = $self->context->{context}->{$self->activity_data->{file}->{file_list_tag}};
         my $length = scalar @{$files};
         for (my $i = 0; $i < $length; $i++) {

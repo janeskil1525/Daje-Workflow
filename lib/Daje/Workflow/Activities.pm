@@ -56,6 +56,7 @@ sub activity($self, $context, $activity, $workflow_data) {
             model         => $self->model,
             activity_data => $activity_data,
         );
+
         my $method = $activity->{method};
         if ($object->can($method)) {
             eval {
