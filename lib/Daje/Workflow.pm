@@ -87,7 +87,7 @@ use Daje::Workflow::Errors::Error;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-our $VERSION = "0.22";
+our $VERSION = "0.24";
 
 has 'workflow_name';    #
 has 'workflow_pkey';    #
@@ -98,7 +98,7 @@ has 'pg';               #
 has 'error';
 has 'workflow_data';
 has 'model';
-
+has 'next_activity';
 
 sub process($self, $activity_name) {
 
@@ -125,6 +125,14 @@ sub process($self, $activity_name) {
                                         and $self->error->has_error() == 0) {
                                         $tx->commit();
                                         $result = 1;
+                                        $auto = 0;
+                                        if($self->error->has_error() == 0) {
+                                            $activity_name = $self->next_activity();
+                                            $auto = length($activity_name) > 0;
+                                            if ($auto == 1) {
+                                                $self->model->load_context(1);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -132,27 +140,17 @@ sub process($self, $activity_name) {
                     }
                 }
             }
-            $auto = 0;
-            if($self->error->has_error() == 0) {
-                $activity_name = $self->_get_auto($activity_name);
-                $auto = length($activity_name > 0);
-            }
+
         }
     }
     return $result;
 }
 
-sub _get_auto($self, $activity_name) {
-
-    my $new_activity = "";
-    my $activity = $self->loader->get_activity(
-        $self->workflow_name, $self->workflow_data->{state}, $activity_name
-    );
-
+sub _get_auto($self, $activity) {
+    $self->next_activity('');
     if(exists $activity->{auto}) {
-        $new_activity = $activity->{auto}->{activity};
+        $self->next_activity($activity->{auto}->{activity});
     }
-    return $new_activity;
 }
 
 sub save_workflow($self, $db) {
@@ -177,6 +175,7 @@ sub _activity($self, $db, $activity_name) {
     );
 
     if(defined $activity) {
+        $self->_get_auto($activity);
         $result = Daje::Workflow::Activities->new(
             db      => $db,
             error   => $self->error,
@@ -210,29 +209,6 @@ sub _state_observers($self) {
 
 sub _activity_pre_checks($self, $activity_name) {
     my $result = 1;
-        if ($self->_state_pre_checks()
-            and $self->error->has_error() == 0) {
-            if ($self->_activity_pre_checks($activity_name)
-                and $self->error->has_error() == 0) {
-                if ($self->_activity($db, $activity_name)
-                    and $self->error->has_error() == 0) {
-                    if ($self->_activity_post_checks($activity_name)
-                        and $self->error->has_error() == 0) {
-                        if ($self->_state_post_checks()
-                            and $self->error->has_error() == 0) {
-                            if ($self->_state_observers()
-                                and $self->error->has_error() == 0) {
-                                if ($self->save_workflow($db)
-                                    and $self->error->has_error() == 0) {
-                                    $tx->commit();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
     my $checks = $self->loader->get_activity_pre_checks(
         $self->workflow_name, $self->workflow_data->{state}, $activity_name
     );
