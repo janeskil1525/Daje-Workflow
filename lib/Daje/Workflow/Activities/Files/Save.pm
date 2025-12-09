@@ -67,12 +67,12 @@ use v5.42;
 
 use Mojo::File;
 
-our $VERSION = "1.10";
+our $VERSION = "1.11";
 
 sub save($self) {
 
     try {
-        my $files = $self->context->{context}->{$self->activity_data->{file}->{file_list_tag}};
+        my $files = $self->context->{context}->{payload}->{$self->activity_data->{file}->{file_list_tag}};
         my $length = scalar @{$files};
         for (my $i = 0; $i < $length; $i++) {
             my $file = "";

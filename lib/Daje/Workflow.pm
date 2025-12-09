@@ -108,7 +108,7 @@ sub process($self, $activity_name) {
     my $tx = $db->begin;
     if ($self->_init($db)) {
         while($auto == 1) {
-            $result = 0;
+            $auto = 0;
             if ($self->_state_pre_checks()
                 and $self->error->has_error() == 0) {
                 if ($self->_activity_pre_checks($activity_name)
@@ -124,15 +124,7 @@ sub process($self, $activity_name) {
                                     if ($self->save_workflow($db)
                                         and $self->error->has_error() == 0) {
                                         $tx->commit();
-                                        $result = 1;
-                                        $auto = 0;
-                                        if($self->error->has_error() == 0) {
-                                            $activity_name = $self->next_activity();
-                                            $auto = length($activity_name) > 0;
-                                            if ($auto == 1) {
-                                                $self->model->load_context(1);
-                                            }
-                                        }
+                                        ($result, $activity_name, $auto) = $self->_is_it_auto($activity_name, $auto);
                                     }
                                 }
                             }
@@ -140,10 +132,22 @@ sub process($self, $activity_name) {
                     }
                 }
             }
-
         }
     }
     return $result;
+}
+
+sub _is_it_auto($self, $activity_name, $auto) {
+    my $result = 1;
+    if($self->error->has_error() == 0) {
+        $activity_name = $self->next_activity();
+        $auto = length($activity_name) > 0;
+        if ($auto == 1) {
+            $self->model->load_context(1);
+            $self->context($self->model->context());
+        }
+    }
+    return ($result, $activity_name, $auto) ;
 }
 
 sub _get_auto($self, $activity) {
