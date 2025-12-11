@@ -65,7 +65,7 @@ use v5.42;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-use Mojo::File;
+use Mojo::File qw(path);;
 
 our $VERSION = "1.11";
 
@@ -78,9 +78,11 @@ sub save($self) {
             my $file = "";
             if (exists @{$files}[$i]->{path} and @{$files}[$i]->{path} == 1) {
                 $file = @{$files}[$i]->{file};
+                $self->_make_dir($file);
             } else {
-                my $filepath = $self->context->{context}->{$self->activity_data->{file}->{target_dir_tag}};
+                my $filepath = $self->context->{context}->{payload}->{$self->activity_data->{file}->{target_dir_tag}};
                 $file = $filepath . @{$files}[$i]->{file} . $self->activity_data->{file}->{filetype};
+                $self->_make_dir($file);
             }
             if (exists @{$files}[$i]->{new_only} and @{$files}[$i]->{new_only} == 1) {
                 if (!-e $file) {
@@ -95,6 +97,13 @@ sub save($self) {
     };
 
     return;
+}
+
+sub _make_dir($self, $file) {
+    my $file_name = path($file)->basename();
+    my $path = $file;
+    $path =~ s/$file_name//;
+    path($path)->make_path();
 }
 
 sub _save_file($self, $file, $data) {

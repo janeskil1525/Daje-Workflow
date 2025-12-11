@@ -78,7 +78,7 @@ sub activity($self, $context, $activity, $workflow_data) {
             }
         }
         if ($self->error->has_error() == 0) {
-            $workflow_data->{state} = $activity->{resulting_state};
+            $workflow_data->{next_state} = $activity->{resulting_state};
         }
     }
 

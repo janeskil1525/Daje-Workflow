@@ -159,6 +159,8 @@ sub _get_auto($self, $activity) {
 
 sub save_workflow($self, $db) {
     try {
+        $self->workflow_data->{state} = $self->workflow_data->{next_state};
+        delete $self->workflow_data->{next_state};
         $self->workflow_pkey(
             $self->model->save_workflow(
                 $self->workflow_data()
