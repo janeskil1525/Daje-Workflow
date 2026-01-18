@@ -75,7 +75,9 @@ sub save ($self) {
             $self->model->insert_history(
                 "New object "  . Dumper($data), " $class->insert", 1
             );
-            my $tools_object_index_pkey = $dbclass->insert($data);
+            my $pkey = $dbclass->insert($data);
+            $self->context->{context}->{payload}->{$dbclass->table_name()} = $pkey;
+
         }
     } catch ($e) {
         $self->error->add_error($e);

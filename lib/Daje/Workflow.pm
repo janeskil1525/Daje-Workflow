@@ -87,7 +87,7 @@ use Daje::Workflow::Errors::Error;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-our $VERSION = "0.55";
+our $VERSION = "0.60";
 
 has 'workflow_name';    #
 has 'workflow_pkey';    #
@@ -298,6 +298,7 @@ sub _init($self, $db) {
     $self->workflow_data($data->workflow_data());
     $self->context($data->context());
     $self->workflow_pkey($self->workflow_data->{workflow_pkey});
+    $self->context->{context}->{workflow}->{connector_data}->{workflow_pkey} = $self->workflow_data->{workflow_pkey};
     $self->model($data);
     return 1;
 }
