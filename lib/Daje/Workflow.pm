@@ -298,7 +298,7 @@ sub _init($self, $db) {
     $self->workflow_data($data->workflow_data());
     $self->context($data->context());
     $self->workflow_pkey($self->workflow_data->{workflow_pkey});
-    $self->context->{context}->{workflow}->{connector_data}->{workflow_pkey} = $self->workflow_data->{workflow_pkey};
+    $self->context->{context}->{workflow}->{workflow_fkey} = $self->workflow_data->{workflow_pkey};
     $self->model($data);
     return 1;
 }

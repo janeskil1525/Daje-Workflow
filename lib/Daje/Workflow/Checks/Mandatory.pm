@@ -70,8 +70,9 @@ sub check($self) {
             @fields = split(',', $self->checks());
         }
         my $length = scalar @fields;
+        my $temp = $self->context();
+        say Dumper($temp);
         for (my $i = 0; $i < $length; $i++) {
-            my $temp = $self->context();
             if (!exists $self->context->{context}->{payload}->{$fields[$i]}) {
                 $result = 0;
                 $self->error->add_error("Mandatory field '$fields[$i]' is missing")

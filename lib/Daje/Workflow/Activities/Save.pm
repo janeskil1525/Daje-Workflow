@@ -64,7 +64,7 @@ sub save ($self) {
         say $dbclass->primary_key_name . " " . Dumper($data);
         if (exists $data->{$dbclass->primary_key_name} and $data->{$dbclass->primary_key_name} > 0) {
             $self->model->insert_history(
-                "Update object " . Dumper($data), " $class->update", 1
+                "Update object " . $dbclass->table_name() . Dumper($data), " $class->update", 2
             );
 
             my $result = $dbclass->update($data);
@@ -73,8 +73,10 @@ sub save ($self) {
             }
         } else {
             $self->model->insert_history(
-                "New object "  . Dumper($data), " $class->insert", 1
+                "New object " . $dbclass->table_name() . Dumper($data), " $class->insert", 2
             );
+            $data->{$dbclass->workflow()} = $self->context->{context}->{workflow}->{workflow_fkey}
+                if($dbclass->workflow());
             my $pkey = $dbclass->insert($data);
             $self->context->{context}->{payload}->{$dbclass->table_name()} = $pkey;
 
