@@ -1,5 +1,5 @@
 package Daje::Workflow::Checks::Mandatory;
-use Mojo::Base 'Daje::Workflow::Common::Checks::Base', -base, -signatures;
+use Mojo::Base 'Daje::Workflow::Checks::Super::Base', -base, -signatures;
 use v5.42;
 
 # NAME
@@ -70,8 +70,6 @@ sub check($self) {
             @fields = split(',', $self->checks());
         }
         my $length = scalar @fields;
-        my $temp = $self->context();
-        say Dumper($temp);
         for (my $i = 0; $i < $length; $i++) {
             if (!exists $self->context->{context}->{payload}->{$fields[$i]}) {
                 $result = 0;

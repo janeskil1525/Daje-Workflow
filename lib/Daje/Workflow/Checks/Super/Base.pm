@@ -1,10 +1,10 @@
-package Daje::Workflow::Common::Checks::Base;
+package Daje::Workflow::Checks::Super::Base;
 use Mojo::Base -base, -signatures;
 use v5.42;
 
 # NAME
 #
-# Daje::Workflow::Common::Checks::Base - Baseclass for workflow check classes
+# Daje::Workflow::Checks::Super::Base - Baseclass for workflow check classes
 #
 #
 # DESCRIPTION
@@ -35,6 +35,7 @@ has 'context';
 has 'checks';
 has 'error';
 has 'model';
+has 'db';
 
 1;
 
