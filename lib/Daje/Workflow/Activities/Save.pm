@@ -53,8 +53,8 @@ sub save ($self) {
     my $data = $self->context->{context}->{payload};
     my $class = $self->activity_data->{class};
     if (my $e = load_class $class) {
-        $self->error->add_error($e);
         $self->error->add_error($class . " Not found ");
+        $self->error->add_error($e);
     }
     return 0 if $self->error->has_error();
     say "Class = " . $class;
@@ -76,7 +76,7 @@ sub save ($self) {
                 "New object " . $dbclass->table_name() . Dumper($data), " $class->insert", 2
             );
             $data->{$dbclass->workflow()} = $self->context->{context}->{workflow}->{workflow_fkey}
-                if($dbclass->workflow());
+                if($dbclass->can('workflow') && length($dbclass->workflow()) > 0);
             my $pkey = $dbclass->insert($data);
             $self->context->{context}->{payload}->{$dbclass->table_name()} = $pkey;
 
