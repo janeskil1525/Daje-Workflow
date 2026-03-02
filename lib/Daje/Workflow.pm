@@ -411,6 +411,7 @@ sub _init($self, $db) {
     if(length($err) > 0) {
         $self->error->add_error($err);
     }
+
     $self->workflow_data($data->workflow_data());
     $self->context($data->context());
     $self->workflow_pkey($self->workflow_data->{workflow_pkey});
