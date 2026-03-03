@@ -21,7 +21,12 @@ sub enqueue_activity($self, $workflow, $activity_name, $workflow_fkey = 0) {
         $context->{context}->{workflow}->{activity} = $activity_name;
         $context->{context}->{workflow}->{workflow_fkey} = $workflow_fkey;
 
-        $self->minion->enqueue(execute_workflow => [ $context ]{queue => "workflow"});
+        $self->minion->enqueue(
+            execute_workflow => [ $context ],
+                {
+                    queue => "workflow"
+                }
+        );
     } catch ($e) {
         $self->error->add_error($e);
     }

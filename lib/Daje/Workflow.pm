@@ -245,8 +245,8 @@ sub process($self, $activity_name) {
                                     if ($self->save_workflow($db)
                                         and $self->error->has_error() == 0) {
                                         $tx->commit();
+                                        $self->check_for_jobs_to_enque($activity_name);
                                         ($result, $activity_name, $auto) = $self->_is_it_auto($activity_name, $auto);
-                                        $self->check_for_jobs_to_enque();
                                     }
                                 }
                             }
@@ -278,6 +278,8 @@ sub check_for_jobs_to_enque($self, $activity_name) {
                         @{$que_activities}[$i]->{workflow},
                         @{$que_activities}[$i]->{activity}
                     );
+                } else {
+                    $result = 0;
                 }
             }
         }
