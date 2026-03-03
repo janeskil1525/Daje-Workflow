@@ -10,6 +10,7 @@ use Daje::Workflow::Database::Model;
 use Daje::Workflow::Checks;
 use Daje::Workflow::Activities;
 use Daje::Workflow::Errors::Error;
+use Daje::Workflow::Enqueue;
 
 # NAME
 # ====
@@ -174,7 +175,13 @@ use Daje::Workflow::Errors::Error;
 #               }
 #             ],
 #             "post_checks":[],
-#             "observers": []
+#             "observers": [],
+#             "que_activities": [
+#               {
+#                 "workflow": "workflow name",
+#                 "activity":  "name of activity"
+#               },
+#             ]
 #           }
 #         ],
 #         "post_checks": [
@@ -200,7 +207,7 @@ use Daje::Workflow::Errors::Error;
 # janeskil1525 E<lt>janeskil1525@gmail.comE<gt>
 #
 
-our $VERSION = "0.60";
+our $VERSION = "0.70";
 
 has 'workflow_name';    #
 has 'workflow_pkey';    #
@@ -212,6 +219,7 @@ has 'error';
 has 'workflow_data';
 has 'model';
 has 'next_activity';
+has 'minion';
 
 sub process($self, $activity_name) {
 
@@ -238,11 +246,38 @@ sub process($self, $activity_name) {
                                         and $self->error->has_error() == 0) {
                                         $tx->commit();
                                         ($result, $activity_name, $auto) = $self->_is_it_auto($activity_name, $auto);
+                                        $self->check_for_jobs_to_enque();
                                     }
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+    return $result;
+}
+
+sub check_for_jobs_to_enque($self, $activity_name) {
+    my $result = 1;
+    if($self->minion) {
+        my $que_activities = $self->loader->get_que_activities(
+            $self->workflow_name, $self->workflow_data->{state}, $activity_name
+        );
+        if(defined $que_activities) {
+            my $length = scalar @{$que_activities};
+            for (my $i = 0; $i < $length; $i++) {
+                if($self->error->has_error() == 0) {
+                    $result = Daje::Workflow::Enqueue->new(
+                        error   => $self->error,
+                        model   => $self->model,
+                        minion  => $self->minion,
+                        context => $self->context
+                    )->enqueue_activity(
+                        @{$que_activities}[$i]->{workflow},
+                        @{$que_activities}[$i]->{activity}
+                    );
                 }
             }
         }
